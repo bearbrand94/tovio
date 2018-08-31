@@ -17,7 +17,10 @@ class UserService extends WebService
 
 	public function searchUser(Request $request){
 		$user_data = User::search_user($request->keyword);
-		for ($i=0; $i < count($user_data); $i++) { 
+		
+		for ($i=0; $i < count($user_data); $i++) {
+        	$user_data[$i]->network = User::get_network($user_data[$i]->id);
+        	$user_data[$i]->network_count = count($user_data[$i]->network);
 			$user_data[$i]->follow_data = User::getFollowData($user_data[$i]->id);
 		}
 		return $this->createSuccessMessage($user_data);
@@ -217,6 +220,9 @@ class UserService extends WebService
 
     	if (Auth::user()) {
             $data['user'] = Auth::user();
+        	$data['user']->network = User::get_network($data['user']->id);
+        	$data['user']->network_count = count($data['user']->network);
+        	$data['user']->follow_data = User::getFollowData($data['user']->id);
         }
 
         return $this->createSuccessMessage($data);

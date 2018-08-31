@@ -13,6 +13,22 @@ use Illuminate\Http\Request;
 |
 */
 
+function createErrorMessage($message, $errorCode){
+	$result = [ "payload"=>'',
+			    "error_msg"=>$message,
+				"code"=>$errorCode
+				];
+	return response()->json($result, $errorCode);
+}
+
+function createSuccessMessage($payload){
+	$result = [ "payload"=>$payload,
+			    "error_msg"=>'',
+				"code"=>200
+				];
+	return response()->json($result);
+}
+	
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -38,15 +54,16 @@ Route::post('/search', function (Request $request) {
 				$post_data[$i]->user_data = App\User::getUserDetail($post_data[$i]->posted_by);
 				$post_data[$i]->follow_data = App\User::getFollowData($post_data[$i]->posted_by);
 			}
-			return $post_data;
+			return createSuccessMessage($post_data);
 			break;
 		case 'user':
 			$user_data = App\User::search_user($request->keyword, $page_show, $page);
 			for ($i=0; $i < count($user_data); $i++) { 
-				$user_data[$i]->user_data = App\User::getUserDetail($user_data[$i]->id);
+            	$user_data[$i]->network = App\User::get_network($user_data[$i]->id);
+            	$user_data[$i]->network_count = count($user_data[$i]->network);
 				$user_data[$i]->follow_data = App\User::getFollowData($user_data[$i]->id);
 			}
-			return $user_data;
+			return createSuccessMessage($user_data);
 			break;
 		case 'tag':
 			$tag_data = App\Post::search_tag($request->keyword, $page_show, $page);
@@ -54,7 +71,7 @@ Route::post('/search', function (Request $request) {
 				$tag_data[$i]->user_data = App\User::getUserDetail($tag_data[$i]->user_id);
 				$tag_data[$i]->follow_data = App\User::getFollowData($tag_data[$i]->user_id);
 			}
-			return $tag_data;
+			return createSuccessMessage($tag_data);
 			break;
 				
 		default:

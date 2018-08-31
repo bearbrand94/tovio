@@ -95,6 +95,11 @@ class User extends Authenticatable
             ->where('users.id', $user_id)
             ->groupBy('users.id')
             ->get();
+        for ($i=0; $i < count($user_data); $i++) { 
+        	$user_data[$i]->network = User::get_network($user_data[$i]->id);
+        	$user_data[$i]->network_count = count($user_data[$i]->network);
+        	$user_data[$i]->follow_data = User::getFollowData($user_data[$i]->id);
+        }
         return $user_data;
     }
 

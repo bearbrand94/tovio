@@ -51,7 +51,6 @@ class Post extends Model
             $post[$i]->post_like_count = Like::where('reference_id', $post[$i]->id)->where('table_name', 'posts')->count();
             $post[$i]->post_liked_by_me = Like::where('reference_id', $post[$i]->id)->where('user_id', Auth::id())->where('table_name', 'posts')->count();    
         }
-        return $post;
         return $result;
     }
 
