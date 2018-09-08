@@ -55,7 +55,11 @@ class UserService extends WebService
 		$address = $request->address;
 
 		$gender = $request->gender;
-		$birthday = $request->birthday;
+		$birthday = null;
+		if($request->birthday ){
+		    $birthday = Date('Y-m-d h:i:s',strtotime($request->birthday));
+		};
+		
 		$company = $request->company;
 		$description = $request->description;
 		$website = $request->website;
@@ -71,7 +75,6 @@ class UserService extends WebService
 				"last_name"=>$last_name,
 				"email"=>$email,
 				"password"=>$password,
-				"telephone"=>$telephone,
 				"username"=>$username
 			),
 			array(
@@ -79,8 +82,8 @@ class UserService extends WebService
 				"last_name" => 'required|min:3',
 				"email"=>'required|min:3|email|unique:users,email',
 				"password" => 'required|min:3',
-				"username" => 'required|min:3|unique:users,username',
-				"telephone" => 'required|min:10|max:13|unique:users,telephone')
+				"username" => 'required|min:3|unique:users,username'
+			)
 		);
 
 		if ($validator->fails()){
@@ -105,11 +108,13 @@ class UserService extends WebService
 		$new_user->company = $company;
 		$new_user->description = $description;
 		$new_user->website = $website;
-
-        $contents = $request->file('user_image');
-        $path = Storage::disk('public')->put('users', $contents);
-        if($path){
-            $new_user->original_image_url = "storage/app/public/" . $path;
+        
+        if($request->file('user_image')){
+            $contents = $request->file('user_image');
+            $path = Storage::disk('public')->put('users', $contents);
+            if($path){
+                $new_user->original_image_url = "storage/app/public/" . $path;
+            }
         }
 
 		$new_user->medium_image_url = $medium_image_url;
@@ -145,7 +150,7 @@ class UserService extends WebService
 		$address = $request->address;
 
 		$gender = $request->gender;
-		$birthday = $request->birthday;
+		$birthday = Date('Y-m-d h:i:s',strtotime($request->birthday));
 		$company = $request->company;
 		$description = $request->description;
 		$website = $request->website;
@@ -175,10 +180,12 @@ class UserService extends WebService
 		$description ? $new_user->description = $description : $new_user->description;
 		$website ? $new_user->website = $website : $new_user->website;
 
-        $contents = $request->file('user_image');
-        $path = Storage::disk('public')->put('users', $contents);
-        if($path){
-            $new_user->original_image_url = "storage/app/public/" . $path;
+        if($request->file('user_image')){
+            $contents = $request->file('user_image');
+            $path = Storage::disk('public')->put('users', $contents);
+            if($path){
+                $new_user->original_image_url = "storage/app/public/" . $path;
+            }
         }
 
 		$new_user->medium_image_url = $medium_image_url;

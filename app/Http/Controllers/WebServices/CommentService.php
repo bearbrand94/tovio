@@ -70,8 +70,9 @@ class CommentService extends WebService
         $comment->parent_id = $parent_id;
 
         $comment->save();
-
-        return $this->createSuccessMessage($comment);
+        
+        $new_comment_data = Comment::get_comment_by_id($comment->id);
+        return $this->createSuccessMessage($new_comment_data);
     }
 
     public function update(Request $request)
